@@ -4,492 +4,408 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英语演讲稿批改助手</title>
-    <style>
-        :root {
-            --primary-color: #0071e3;
-            --secondary-color: #f5f5f7;
-            --text-color: #1d1d1f;
-            --light-gray: #d2d2d7;
-            --white: #ffffff;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.5;
-            color: var(--text-color);
-            background-color: var(--secondary-color);
-            margin: 0;
-            padding: 0;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        h1, h2, h3 {
-            font-weight: 600;
-            color: var(--text-color);
-        }
-        
-        h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        h2 {
-            font-size: 24px;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        
-        .container {
-            background-color: var(--white);
-            border-radius: 18px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
-        }
-        
-        textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 1px solid var(--light-gray);
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 16px;
-            resize: vertical;
-            margin-bottom: 20px;
-            transition: border-color 0.3s;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 113, 227, 0.2);
-        }
-        
-        button:hover {
-            background-color: #0062c4;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 113, 227, 0.25);
-        }
-        
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 113, 227, 0.2);
-        }
-        
-        button.secondary {
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
-            border: 1px solid var(--light-gray);
-        }
-        
-        button.secondary:hover {
-            background-color: #e5e5e9;
-        }
-        
-        .feedback-section {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: var(--secondary-color);
-            border-radius: 12px;
-        }
-        
-        .feedback-item {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--light-gray);
-        }
-        
-        .feedback-item:last-child {
-            border-bottom: none;
-        }
-        
-        .original {
-            color: #ff453a;
-            text-decoration: line-through;
-            margin-right: 5px;
-        }
-        
-        .corrected {
-            color: #30d158;
-            font-weight: 500;
-        }
-        
-        .reason {
-            color: var(--text-color);
-            font-size: 14px;
-            margin-top: 5px;
-            padding-left: 10px;
-            border-left: 3px solid var(--light-gray);
-        }
-        
-        .score {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin: 20px 0;
-        }
-        
-        .follow-up {
-            margin-top: 30px;
-        }
-        
-        .follow-up-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .follow-up-option {
-            background-color: var(--secondary-color);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .follow-up-option:hover {
-            background-color: #e5e5e9;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            color: var(--light-gray);
-            font-size: 14px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 添加生成docx所需的库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.6/docxtemplater.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3498db',
+                        secondary: '#f5f5f7',
+                        neutral: '#86868b',
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
             }
-            
-            .button-group {
-                flex-direction: column;
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
             }
-            
-            button {
-                width: 100%;
+            .btn-shadow {
+                box-shadow: 0 4px 14px rgba(52, 152, 219, 0.3);
+            }
+            .btn-hover {
+                transition: all 0.3s ease;
+            }
+            .btn-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 18px rgba(52, 152, 219, 0.4);
+            }
+            .btn-active {
+                transform: translateY(1px);
+                box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
             }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>英语演讲稿批改助手</h1>
-        <p>专业英语演讲稿语言修改与框架逻辑优化</p>
-        
-        <div id="input-section">
-            <h2>输入您的演讲稿</h2>
-            <textarea id="speech-input" placeholder="请在此粘贴您的英语演讲稿..."></textarea>
-            <div class="button-group">
-                <button id="reset-btn" class="secondary">重置</button>
-                <button id="submit-btn">开始批改</button>
-                <button id="export-btn" class="secondary" disabled>导出报告</button>
-            </div>
-        </div>
-        
-        <div id="feedback-section" class="feedback-section hidden">
-            <h2>批改反馈</h2>
-            <div id="language-feedback">
-                <h3>语言修改建议</h3>
-                <div id="language-items"></div>
-            </div>
-            
-            <div id="structure-feedback">
-                <h3>框架逻辑优化</h3>
-                <div id="structure-items"></div>
-            </div>
-            
-            <div id="score-feedback">
-                <h3>综合评估</h3>
-                <div class="score">得分: <span id="score-value">0</span>/30</div>
-                <div id="score-comment"></div>
-                <div id="general-advice"></div>
-            </div>
-            
-            <div class="follow-up">
-                <h3>需要进一步帮助吗？</h3>
-                <p>您可以选择以下问题继续咨询：</p>
-                <div class="follow-up-options" id="follow-up-options">
-                    <div class="follow-up-option" data-question="如何改进我的开场白？">如何改进我的开场白？</div>
-                    <div class="follow-up-option" data-question="如何让我的论点更有说服力？">如何让我的论点更有说服力？</div>
-                    <div class="follow-up-option" data-question="如何优化我的结尾部分？">如何优化我的结尾部分？</div>
-                    <div class="follow-up-option" data-question="有哪些更好的词汇可以替换？">有哪些更好的词汇可以替换？</div>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- 页面容器 -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 标题区域 -->
+        <header class="text-center mb-10">
+            <h1 class="text-[clamp(2rem,5vw,3rem)] font-semibold text-gray-900 mb-2">英语演讲稿批改助手</h1>
+            <p class="text-neutral text-lg">专业的演讲稿分析与优化建议</p>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 输入区域 -->
+            <section class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-xl font-medium mb-4 flex items-center">
+                    <i class="fa fa-pencil-square-o text-primary mr-2"></i>输入演讲稿
+                </h2>
+                <div class="mb-4">
+                    <textarea 
+                        id="speechInput" 
+                        class="w-full h-64 p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all resize-none"
+                        placeholder="请在此输入您的英语演讲稿..."
+                    ></textarea>
                 </div>
-                <textarea id="follow-up-input" placeholder="或者输入您自己的问题..." class="hidden" style="margin-top: 15px;"></textarea>
-                <button id="ask-btn" class="hidden" style="margin-top: 10px;">提问</button>
-            </div>
-        </div>
+                
+                <!-- 按钮区域 -->
+                <div class="flex flex-wrap gap-4 mt-6">
+                    <button 
+                        id="resetBtn" 
+                        class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg btn-shadow btn-hover flex-1 sm:flex-none"
+                    >
+                        <i class="fa fa-refresh mr-2"></i>重置
+                    </button>
+                    <button 
+                        id="checkBtn" 
+                        class="px-6 py-3 bg-primary text-white rounded-lg btn-shadow btn-hover flex-1 sm:flex-none"
+                    >
+                        <i class="fa fa-check mr-2"></i>开始批改
+                    </button>
+                    <button 
+                        id="exportBtn" 
+                        class="px-6 py-3 bg-gray-800 text-white rounded-lg btn-shadow btn-hover flex-1 sm:flex-none"
+                    >
+                        <i class="fa fa-download mr-2"></i>导出报告
+                    </button>
+                </div>
+            </section>
+
+            <!-- 反馈区域 -->
+            <section class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-xl font-medium mb-4 flex items-center">
+                    <i class="fa fa-comments-o text-primary mr-2"></i>批改反馈
+                </h2>
+                <div id="feedbackArea" class="min-h-64 p-4 border border-gray-200 rounded-lg">
+                    <div class="text-neutral text-center py-12">
+                        <i class="fa fa-file-text-o text-4xl mb-4 opacity-30"></i>
+                        <p>请输入演讲稿并点击"开始批改"按钮获取反馈</p>
+                    </div>
+                </div>
+
+                <!-- 追问区域 -->
+                <div id="followUpArea" class="mt-6 hidden">
+                    <h3 class="text-lg font-medium mb-3">您可能想了解：</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button class="followUpQuestion px-4 py-2 border border-gray-200 rounded-lg text-left hover:bg-secondary transition-colors">
+                            如何提高演讲稿的逻辑性？
+                        </button>
+                        <button class="followUpQuestion px-4 py-2 border border-gray-200 rounded-lg text-left hover:bg-secondary transition-colors">
+                            如何让语言表达更地道？
+                        </button>
+                        <button class="followUpQuestion px-4 py-2 border border-gray-200 rounded-lg text-left hover:bg-secondary transition-colors">
+                            演讲开头有哪些好的技巧？
+                        </button>
+                        <button class="followUpQuestion px-4 py-2 border border-gray-200 rounded-lg text-left hover:bg-secondary transition-colors">
+                            如何增强演讲稿的思辨性？
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="mt-16 text-center text-neutral text-sm">
+            <p>本工具仅供学习和教学使用，未经授权不得用于商业用途，评测结果仅供参考。</p>
+            <p class="mt-2">Powered by Github. Copyright@PERRY.</p>
+        </footer>
     </div>
-    
-    <footer>
-        Powered by Github. Copyright@PERRY.
-    </footer>
-    
+
     <script>
+        // 后端API地址 - 部署后需要修改为实际的Vercel地址
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000/api' 
+            : 'https://你的vercel应用地址.vercel.app/api';
+
         document.addEventListener('DOMContentLoaded', function() {
-            const speechInput = document.getElementById('speech-input');
-            const submitBtn = document.getElementById('submit-btn');
-            const resetBtn = document.getElementById('reset-btn');
-            const exportBtn = document.getElementById('export-btn');
-            const feedbackSection = document.getElementById('feedback-section');
-            const languageItems = document.getElementById('language-items');
-            const structureItems = document.getElementById('structure-items');
-            const scoreValue = document.getElementById('score-value');
-            const scoreComment = document.getElementById('score-comment');
-            const generalAdvice = document.getElementById('general-advice');
-            const followUpOptions = document.getElementById('follow-up-options');
-            const followUpInput = document.getElementById('follow-up-input');
-            const askBtn = document.getElementById('ask-btn');
-            
-            let currentFeedback = null;
-            
-            // 示例批改函数 - 实际应用中应该连接到后端服务
-            function analyzeSpeech(text) {
-                // 这里应该是实际的分析逻辑
-                // 为了演示目的，我们使用模拟数据
-                
-                const feedback = {
-                    language: [
-                        {
-                            original: "In today society,",
-                            corrected: "In today's society,",
-                            reason: "缺少所有格形式，today后面需要加's表示所属关系"
-                        },
-                        {
-                            original: "We should pay more attention on this issue.",
-                            corrected: "We should pay more attention to this issue.",
-                            reason: "pay attention固定搭配介词是to，不是on"
-                        },
-                        {
-                            original: "This problems is very serious.",
-                            corrected: "This problem is very serious.",
-                            reason: "this后面应该接单数名词problem，或者改为these problems"
-                        }
-                    ],
-                    structure: [
-                        "建议在引言部分增加一个吸引人的开场白，如引用或统计数据",
-                        "第二部分和第三部分之间的过渡不够自然，建议添加过渡句",
-                        "结论部分可以更加强有力地总结主要观点"
-                    ],
-                    score: 22,
-                    scoreComment: "表达观点较清晰，逻辑较清楚；有少量语言错误。",
-                    generalAdvice: "整体演讲稿结构合理，但需要注意语法准确性。建议多使用连接词使段落间过渡更自然，并增加一些具体例子来支持您的论点。"
-                };
-                
-                return feedback;
-            }
-            
-            submitBtn.addEventListener('click', function() {
-                const text = speechInput.value.trim();
-                
-                if (!text) {
-                    alert('请输入您的演讲稿内容');
-                    return;
-                }
-                
-                // 模拟分析过程
-                submitBtn.textContent = '分析中...';
-                submitBtn.disabled = true;
-                
-                setTimeout(function() {
-                    currentFeedback = analyzeSpeech(text);
-                    renderFeedback(currentFeedback);
-                    
-                    feedbackSection.classList.remove('hidden');
-                    exportBtn.disabled = false;
-                    submitBtn.textContent = '开始批改';
-                    submitBtn.disabled = false;
-                    
-                    // 滚动到反馈部分
-                    feedbackSection.scrollIntoView({ behavior: 'smooth' });
-                }, 1500);
+            const speechInput = document.getElementById('speechInput');
+            const feedbackArea = document.getElementById('feedbackArea');
+            const followUpArea = document.getElementById('followUpArea');
+            const resetBtn = document.getElementById('resetBtn');
+            const checkBtn = document.getElementById('checkBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const followUpQuestions = document.querySelectorAll('.followUpQuestion');
+
+            // 存储实际的反馈数据，用于导出
+            let feedbackData = null;
+            let originalSpeech = '';
+
+            // 按钮点击效果
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('mousedown', function() {
+                    this.classList.add('btn-active');
+                });
+                button.addEventListener('mouseup', function() {
+                    this.classList.remove('btn-active');
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.classList.remove('btn-active');
+                });
             });
-            
+
+            // 重置按钮
             resetBtn.addEventListener('click', function() {
                 speechInput.value = '';
-                feedbackSection.classList.add('hidden');
-                exportBtn.disabled = true;
-                currentFeedback = null;
-            });
-            
-            exportBtn.addEventListener('click', function() {
-                if (!currentFeedback) return;
-                
-                // 创建报告内容
-                let report = `英语演讲稿批改报告\n\n`;
-                report += `==============================\n\n`;
-                report += `语言修改建议:\n\n`;
-                
-                currentFeedback.language.forEach(item => {
-                    report += `原文: ${item.original}\n`;
-                    report += `修改: ${item.corrected}\n`;
-                    report += `原因: ${item.reason}\n\n`;
-                });
-                
-                report += `==============================\n\n`;
-                report += `框架逻辑优化:\n\n`;
-                
-                currentFeedback.structure.forEach(item => {
-                    report += `• ${item}\n`;
-                });
-                
-                report += `\n==============================\n\n`;
-                report += `综合评估:\n\n`;
-                report += `得分: ${currentFeedback.score}/30\n`;
-                report += `${currentFeedback.scoreComment}\n\n`;
-                report += `总体建议:\n`;
-                report += `${currentFeedback.generalAdvice}\n\n`;
-                report += `==============================\n\n`;
-                report += `Powered by Github. Copyright@PERRY.`;
-                
-                // 创建Blob对象
-                const blob = new Blob([report], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                
-                // 创建下载链接
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = '英语演讲稿批改报告.txt';
-                document.body.appendChild(a);
-                a.click();
-                
-                // 清理
-                setTimeout(() => {
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                }, 100);
-            });
-            
-            function renderFeedback(feedback) {
-                // 清空现有内容
-                languageItems.innerHTML = '';
-                structureItems.innerHTML = '';
-                
-                // 渲染语言修改建议
-                feedback.language.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'feedback-item';
-                    div.innerHTML = `
-                        <div>
-                            <span class="original">${item.original}</span>
-                            <span class="corrected">${item.corrected}</span>
-                        </div>
-                        <div class="reason">${item.reason}</div>
-                    `;
-                    languageItems.appendChild(div);
-                });
-                
-                // 渲染框架逻辑优化
-                feedback.structure.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'feedback-item';
-                    div.textContent = `• ${item}`;
-                    structureItems.appendChild(div);
-                });
-                
-                // 渲染评分和建议
-                scoreValue.textContent = feedback.score;
-                scoreComment.textContent = feedback.scoreComment;
-                generalAdvice.textContent = feedback.generalAdvice;
-            }
-            
-            // 跟进问题处理
-            followUpOptions.addEventListener('click', function(e) {
-                if (e.target.classList.contains('follow-up-option')) {
-                    const question = e.target.getAttribute('data-question');
-                    answerFollowUp(question);
-                }
-            });
-            
-            function answerFollowUp(question) {
-                // 模拟回答 - 实际应用中应该连接到后端服务
-                let answer = '';
-                
-                switch(question) {
-                    case '如何改进我的开场白？':
-                        answer = '一个好的开场白应该立即吸引听众的注意力。您可以考虑以下几种方式：1) 提出一个发人深省的问题；2) 引用相关领域的权威人士的话；3) 分享一个惊人的统计数据；4) 讲述一个简短的个人故事。根据您的演讲主题，选择最适合的方式。';
-                        break;
-                    case '如何让我的论点更有说服力？':
-                        answer = '要使论点更有说服力，建议：1) 提供具体的数据和研究结果支持；2) 使用权威来源的引用；3) 添加相关的现实案例；4) 考虑并反驳可能的反对意见。每个主要论点最好有2-3个支持证据。';
-                        break;
-                    case '如何优化我的结尾部分？':
-                        answer = '强有力的结尾应该：1) 简要总结主要观点；2) 重申核心信息；3) 给听众留下深刻印象（可以是发人深省的问题、号召行动或展望未来）；4) 避免在结尾引入新信息。尝试以强有力的陈述结束演讲。';
-                        break;
-                    case '有哪些更好的词汇可以替换？':
-                        answer = '根据您的演讲稿，可以考虑以下词汇升级：1) "good" → "excellent, outstanding, remarkable"; 2) "bad" → "negative, detrimental, adverse"; 3) "important" → "crucial, vital, paramount"; 4) "many" → "numerous, a multitude of, countless"。使用更精确的词汇可以提升演讲的专业性。';
-                        break;
-                    default:
-                        answer = '感谢您的提问。关于"' + question + '"，我的建议是...';
-                }
-                
-                // 创建并显示回答
-                const answerDiv = document.createElement('div');
-                answerDiv.className = 'feedback-item';
-                answerDiv.innerHTML = `
-                    <h4>Q: ${question}</h4>
-                    <p>${answer}</p>
+                feedbackArea.innerHTML = `
+                    <div class="text-neutral text-center py-12">
+                        <i class="fa fa-file-text-o text-4xl mb-4 opacity-30"></i>
+                        <p>请输入演讲稿并点击"开始批改"按钮获取反馈</p>
+                    </div>
                 `;
+                followUpArea.classList.add('hidden');
+                feedbackData = null;
+                originalSpeech = '';
+            });
+
+            // 开始批改按钮
+            checkBtn.addEventListener('click', async function() {
+                const speechText = speechInput.value.trim();
+                originalSpeech = speechText;
                 
-                // 插入到反馈部分
-                const followUpSection = document.querySelector('.follow-up');
-                followUpSection.insertBefore(answerDiv, followUpSection.firstChild);
-                
-                // 滚动到回答
-                answerDiv.scrollIntoView({ behavior: 'smooth' });
+                if (!speechText) {
+                    feedbackArea.innerHTML = `
+                        <div class="text-red-500 text-center py-12">
+                            <i class="fa fa-exclamation-circle text-4xl mb-4"></i>
+                            <p>请先输入英语演讲稿内容</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 显示加载状态
+                feedbackArea.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fa fa-spinner fa-spin text-4xl mb-4 text-primary"></i>
+                        <p>正在批改中，请稍候...</p>
+                    </div>
+                `;
+
+                try {
+                    // 调用真实的后端API
+                    const response = await fetch(`${API_BASE_URL}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            message: speechText,
+                            questionType: 'comprehensive'
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                    }
+
+                    if (data.success) {
+                        // 存储反馈数据
+                        feedbackData = data;
+                        // 显示反馈结果
+                        displayFeedback(data);
+                        followUpArea.classList.remove('hidden');
+                    } else {
+                        throw new Error(data.error || '批改失败');
+                    }
+
+                } catch (error) {
+                    console.error('批改请求失败:', error);
+                    feedbackArea.innerHTML = `
+                        <div class="text-red-500 text-center py-12">
+                            <i class="fa fa-exclamation-circle text-4xl mb-4"></i>
+                            <p>批改失败: ${error.message}</p>
+                            <p class="text-sm mt-2">请检查网络连接或稍后重试</p>
+                        </div>
+                    `;
+                }
+            });
+
+            // 显示反馈结果的函数
+            function displayFeedback(data) {
+                if (data.rawResponse) {
+                    // 直接显示AI的原始回复
+                    feedbackArea.innerHTML = `
+                        <div class="space-y-6">
+                            <div class="bg-white p-4 rounded-lg">
+                                <div class="prose max-w-none">
+                                    ${formatAIResponse(data.rawResponse)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // 如果没有原始回复，显示错误
+                    feedbackArea.innerHTML = `
+                        <div class="text-red-500 text-center py-12">
+                            <i class="fa fa-exclamation-circle text-4xl mb-4"></i>
+                            <p>未能获取到有效的反馈内容</p>
+                        </div>
+                    `;
+                }
             }
-            
-            // 处理自定义问题
-            followUpOptions.addEventListener('click', function(e) {
-                if (e.target.classList.contains('custom-question')) {
-                    followUpInput.classList.remove('hidden');
-                    askBtn.classList.remove('hidden');
-                    followUpInput.focus();
+
+            // 格式化AI回复的文本
+            function formatAIResponse(text) {
+                // 将文本转换为HTML格式
+                let html = text
+                    .replace(/\n\n+/g, '</p><p>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/(\d+\.)\s/g, '<strong>$1</strong> ')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+                // 添加一些基本的样式类
+                html = html
+                    .replace(/<p>/g, '<p class="mb-4">')
+                    .replace(/<strong>/g, '<strong class="text-gray-900">')
+                    .replace(/<h3>/g, '<h3 class="text-lg font-semibold mb-3 mt-6 text-primary">')
+                    .replace(/<h4>/g, '<h4 class="font-semibold mb-2 mt-4 text-gray-900">');
+
+                return `<p>${html}</p>`;
+            }
+
+            // 导出报告按钮
+            exportBtn.addEventListener('click', function() {
+                if (!feedbackData || !originalSpeech) {
+                    alert('请先完成演讲稿批改');
+                    return;
+                }
+
+                try {
+                    // 创建报告内容
+                    const reportContent = `
+英语演讲稿批改报告
+===============================
+
+原始演讲稿：
+${originalSpeech}
+
+批改反馈：
+${feedbackData.rawResponse}
+
+生成时间：${new Date().toLocaleString('zh-CN')}
+                    `.trim();
+
+                    // 创建Blob对象
+                    const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+                    
+                    // 使用FileSaver保存文件
+                    saveAs(blob, '英语演讲稿批改报告.txt');
+
+                } catch (error) {
+                    console.error('导出失败:', error);
+                    alert('导出报告时出错，请重试');
                 }
             });
-            
-            askBtn.addEventListener('click', function() {
-                const question = followUpInput.value.trim();
-                if (question) {
-                    answerFollowUp(question);
-                    followUpInput.value = '';
-                    followUpInput.classList.add('hidden');
-                    askBtn.classList.add('hidden');
-                }
-            });
-            
-            // 按Enter键提交问题
-            followUpInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    askBtn.click();
-                }
+
+            // 追问问题点击事件
+            followUpQuestions.forEach(question => {
+                question.addEventListener('click', async function() {
+                    const questionText = this.textContent.trim();
+                    
+                    if (!originalSpeech) {
+                        alert('请先完成演讲稿批改');
+                        return;
+                    }
+
+                    // 显示加载状态
+                    const loadingElement = document.createElement('div');
+                    loadingElement.className = 'mt-6 p-4 bg-secondary rounded-lg';
+                    loadingElement.innerHTML = `
+                        <div class="text-center">
+                            <i class="fa fa-spinner fa-spin text-primary mr-2"></i>
+                            正在生成回答...
+                        </div>
+                    `;
+                    feedbackArea.appendChild(loadingElement);
+
+                    try {
+                        // 调用追问API
+                        const response = await fetch(`${API_BASE_URL}/chat`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ 
+                                message: originalSpeech,
+                                followUpQuestion: questionText
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                        }
+
+                        if (data.success) {
+                            // 移除加载状态
+                            feedbackArea.removeChild(loadingElement);
+
+                            // 显示追问答案
+                            const answerElement = document.createElement('div');
+                            answerElement.className = 'mt-6 p-4 bg-secondary rounded-lg';
+                            answerElement.innerHTML = `
+                                <h4 class="font-semibold mb-3 text-primary">Q: ${questionText}</h4>
+                                <div class="prose max-w-none text-gray-700">
+                                    ${formatAIResponse(data.rawResponse || data.answer)}
+                                </div>
+                            `;
+                            
+                            feedbackArea.appendChild(answerElement);
+                            
+                            // 保存到反馈数据中
+                            if (!feedbackData.followUpContent) {
+                                feedbackData.followUpContent = [];
+                            }
+                            feedbackData.followUpContent.push({
+                                question: questionText,
+                                answer: data.rawResponse || data.answer
+                            });
+
+                            // 滚动到最新内容
+                            answerElement.scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                            throw new Error(data.error || '生成回答失败');
+                        }
+
+                    } catch (error) {
+                        console.error('追问请求失败:', error);
+                        // 更新加载状态为错误
+                        loadingElement.innerHTML = `
+                            <div class="text-red-500">
+                                <i class="fa fa-exclamation-circle mr-2"></i>
+                                回答生成失败: ${error.message}
+                            </div>
+                        `;
+                    }
+                });
             });
         });
     </script>
